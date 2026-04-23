@@ -10,19 +10,18 @@ def print_result(n, s):
 
 
 def main():
-    head = "time,t_outside,t_inside,pressure,humidity".split(',')
-    unit = "%Y-%m-%dT%H:%M:%S,°C,°C,hPa,%".split(',')
+    time_format = "%Y-%m-%dT%H:%M:%S"
     data = []
 
     # use all csv files in ./data/
     csvs = sorted(glob(os.path.dirname(os.path.realpath(__file__))+'/data/????-??-??T??-??-??.csv'))
-    for csv in csvs:
-        with open(csv, "r") as f:
-            line = f.readlines()[-1]
-            items = line.strip().split(',')
-            data.append(datetime.datetime.strptime(items[0], unit[0]))
-            for i in range(1, 5):
-                data.append(float(items[i]))
+    csv = csvs[-1]
+    with open(csv, "r") as f:
+        line = f.readlines()[-1]
+        items = line.strip().split(',')
+        data.append(datetime.datetime.strptime(items[0], time_format))
+        for i in range(1, 5):
+            data.append(float(items[i]))
 
     print_result(1, data[0].strftime("%H:%M"))
     print_result(2, data[1])

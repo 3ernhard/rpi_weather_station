@@ -10,8 +10,7 @@ from matplotlib import pyplot as plt
 
 
 def main():
-    head = "time,t_outside,t_inside,pressure,humidity".split(',')
-    unit = "%Y-%m-%dT%H:%M:%S,°C,°C,hPa,%".split(',')
+    time_format = "%Y-%m-%dT%H:%M:%S"
     data = [[], [], [], [], []]
 
     # Plot all csv files in ./data/ if no argument is passed, else plot the passed csv file.
@@ -23,7 +22,7 @@ def main():
                     continue
                 try:
                     items = line.strip().split(',')
-                    data[0].append(datetime.datetime.strptime(items[0], unit[0]))
+                    data[0].append(datetime.datetime.strptime(items[0], time_format))
                     for i in range(1, 5):
                         data[i].append(float(items[i]))
                 except ValueError:
