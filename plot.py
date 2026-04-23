@@ -16,6 +16,7 @@ def head_line(head, line, rm_chrs=["#", " ", "\n"], sep=","):
     for rm_chr in rm_chrs:
         line = line.replace(rm_chr, "")
     head = line.split(sep)
+    return head
 
 
 def unit_line(unit, line, rm_chrs=["#", " ", "\n"], sep=","):
@@ -24,9 +25,10 @@ def unit_line(unit, line, rm_chrs=["#", " ", "\n"], sep=","):
     for rm_chr in rm_chrs:
         line = line.replace(rm_chr, "")
     unit = line.split(sep)
+    return unit
 
 
-def data_line(data, line, rm_chrs=[" ", "\n"], sep=",", comment="#"):
+def data_line(data, unit, line, rm_chrs=[" ", "\n"], sep=",", comment="#"):
     if len(line) == 0 or line[0] == comment:
         return
     for rm_chr in rm_chrs:
@@ -35,6 +37,7 @@ def data_line(data, line, rm_chrs=[" ", "\n"], sep=",", comment="#"):
     data[0].append(datetime.datetime.strptime(sep_line[0], unit[0]))
     for i in range(1, 5):
         data[i].append(float(sep_line[i]))
+    return data
 
 
 def main():
@@ -46,11 +49,11 @@ def main():
     csvs = argv[1:] if len(argv) > 1 else sorted(glob(os.path.dirname(os.path.realpath(__file__))+'/data/????-??-??T??-??-??.csv'))
     for csv in csvs:
         with open(csv, "r") as f:
-            head_line(head, f.readline())
-            unit_line(unit, f.readline())
+            head = head_line(head, f.readline())
+            unit = unit_line(unit, f.readline())
             for line in f.readlines():
                 try:
-                    data_line(data, line)
+                    data = data_line(data, unit, line)
                 except ValueError:
                     print(f"Invalid data line in '{csv}' detected.")
                     continue
