@@ -9,54 +9,28 @@ import numpy as np
 from matplotlib import pyplot as plt
 
 
-
-def head_line(head, line, rm_chrs=["#", " ", "\n"], sep=","):
-    if head != []:
-        return
-    for rm_chr in rm_chrs:
-        line = line.replace(rm_chr, "")
-    head = line.split(sep)
-    return head
-
-
-def unit_line(unit, line, rm_chrs=["#", " ", "\n"], sep=","):
-    if unit != []:
-        return
-    for rm_chr in rm_chrs:
-        line = line.replace(rm_chr, "")
-    unit = line.split(sep)
-    return unit
-
-
-def data_line(data, unit, line, rm_chrs=[" ", "\n"], sep=",", comment="#"):
-    if len(line) == 0 or line[0] == comment:
-        return
-    for rm_chr in rm_chrs:
-        line = line.replace(rm_chr, "")
-    sep_line = line.split(sep)
-    data[0].append(datetime.datetime.strptime(sep_line[0], unit[0]))
-    for i in range(1, 5):
-        data[i].append(float(sep_line[i]))
-    return data
-
-
 def main():
-    head = []
-    unit = []
+    head = "time,t_outside,t_inside,pressure,humidity".split(',')
+    unit = "%Y-%m-%dT%H:%M:%S,°C,°C,hPa,%".split(',')
     data = [[], [], [], [], []]
 
     # Plot all csv files in ./data/ if no argument is passed, else plot the passed csv file.
     csvs = argv[1:] if len(argv) > 1 else sorted(glob(os.path.dirname(os.path.realpath(__file__))+'/data/????-??-??T??-??-??.csv'))
     for csv in csvs:
         with open(csv, "r") as f:
-            head = head_line(head, f.readline())
-            unit = unit_line(unit, f.readline())
             for line in f.readlines():
-                try:
-                    data = data_line(data, unit, line)
-                except ValueError:
-                    print(f"Invalid data line in '{csv}' detected.")
+                if line.startswith('#'):
                     continue
+                try:
+                    items = line.strip().split(',')
+                    data[0].append(datetime.datetime.strptime(items[0], unit[0]))
+                    for i in range(1, 5):
+                        data[i].append(float(items[i]))
+                except ValueError:
+                    print("=======================================")
+                    print(f"Invalid data line in '{csv}' detected:")
+                    print(f"{line}")
+                    print("=======================================")
 
     # data[i], i =
     # 0 : time
