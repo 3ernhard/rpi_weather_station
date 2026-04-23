@@ -1,0 +1,5 @@
+expect
+screen
+python3-numpy
+python3-matplotlib
+python3-serial

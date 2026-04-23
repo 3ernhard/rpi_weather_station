@@ -4,17 +4,8 @@ import datetime
 from glob import glob
 import os
 
-# use all csv files in ./data/
-csvs = sorted(glob(os.path.dirname(os.path.realpath(__file__))
-              +'/data/????-??-??T??-??-??.csv'))
 
-head = []
-unit = []
-data = [[], [], [], [], []]
-
-
-def head_line(line, rm_chrs=["#", " ", "\n"], sep=","):
-    global head
+def head_line(head, line, rm_chrs=["#", " ", "\n"], sep=","):
     if head != []:
         return
     for rm_chr in rm_chrs:
@@ -22,8 +13,7 @@ def head_line(line, rm_chrs=["#", " ", "\n"], sep=","):
     head = line.split(sep)
 
 
-def unit_line(line, rm_chrs=["#", " ", "\n"], sep=","):
-    global unit
+def unit_line(unit, line, rm_chrs=["#", " ", "\n"], sep=","):
     if unit != []:
         return
     for rm_chr in rm_chrs:
@@ -31,8 +21,7 @@ def unit_line(line, rm_chrs=["#", " ", "\n"], sep=","):
     unit = line.split(sep)
 
 
-def data_line(line, rm_chrs=[" ", "\n"], sep=",", comment="#"):
-    global data
+def data_line(data, line, rm_chrs=[" ", "\n"], sep=",", comment="#"):
     if len(line) == 0 or line[0] == comment:
         return
     for rm_chr in rm_chrs:
@@ -47,18 +36,29 @@ def print_result(n, s):
     print(fr"<result{n:d}>{s}</result{n:d}>")
 
 
-for csv in csvs:
-    with open(csv, "r") as f:
-        head_line(f.readline())
-        unit_line(f.readline())
-        for line in f.readlines():
-            try:
-                data_line(line)
-            except ValueError:
-                print(f"Invalid data line in '{csv}' detected.")
-                continue
+def main():
+    head = []
+    unit = []
+    data = [[], [], [], [], []]
 
-print_result(1, data[0][-1].strftime("%H:%M"))
-print_result(2, data[1][-1])
-print_result(3, data[2][-1])
-print_result(4, data[4][-1])
+    # use all csv files in ./data/
+    csvs = sorted(glob(os.path.dirname(os.path.realpath(__file__))+'/data/????-??-??T??-??-??.csv'))
+    for csv in csvs:
+        with open(csv, "r") as f:
+            head_line(head, f.readline())
+            unit_line(unit, f.readline())
+            for line in f.readlines():
+                try:
+                    data_line(data, line)
+                except ValueError:
+                    print(f"Invalid data line in '{csv}' detected.")
+                    continue
+
+    print_result(1, data[0][-1].strftime("%H:%M"))
+    print_result(2, data[1][-1])
+    print_result(3, data[2][-1])
+    print_result(4, data[4][-1])
+
+
+if __name__ == "__main__":
+    main()

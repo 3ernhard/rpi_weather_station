@@ -1,5 +1,9 @@
+#!/usr/bin/env python3
+
 from smbus import SMBus
 from time import sleep
+import serial
+import time
 
 
 class BME280:
@@ -174,3 +178,20 @@ class BME280:
 
             return False
 
+
+def read_celsius(port='/dev/ttyACM0', baudrate=9600):
+    while True:
+        try:
+            s = serial.Serial(port, baudrate)
+            s.write(1)
+            return float(s.readline())
+        except:
+            time.sleep(0.1)
+
+
+def main():
+    print(read_celsius(), '°C')
+
+
+if __name__ == '__main__':
+    main()
